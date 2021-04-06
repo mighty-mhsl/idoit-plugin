@@ -1,0 +1,44 @@
+<idea-plugin>
+    <id>com.idoit.idoit-plugin</id>
+    <name>Idoit-Git</name>
+    <vendor email="mihusle@protonmail.com" url="http://www.yourcompany.com">IDOIT</vendor>
+
+    <description><![CDATA[
+    Plugin for passing courses from idoit platform right inside IDEA. Mostly used for github integration.
+    ]]></description>
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>Git4Idea</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+        <action id="com.idoit.action.LoginAction" class="com.idoit.action.LoginAction" text="Login Idoit">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+        </action>
+        <action id="com.idoit.action.ChooseLessonAction" class="com.idoit.action.ChooseLessonAction" text="Blocks/Lessons"
+                description="Show blocks and lessons">
+            <add-to-group group-id="NavBarToolBar" anchor="first"/>
+        </action>
+        <action id="com.idoit.action.ResetLessonAction" class="com.idoit.action.ResetLessonAction"
+                text="Reset Lesson Progress" description="Reset current lesson progress and get back to the beginning">
+            <add-to-group group-id="NavBarToolBar" anchor="first"/>
+        </action>
+        <action id="com.idoit.action.TestRunAction" class="com.idoit.action.TestRunAction" text="Check Lesson"
+                description="Check lesson on the server">
+            <add-to-group group-id="NavBarToolBar" anchor="first"/>
+        </action>
+        <action id="com.idoit.action.SwitchLessonSolutionAction" class="com.idoit.action.SwitchLessonSolutionAction"
+                text="Switch To Solution/Template" description="Switch between current lesson and its solution">
+            <add-to-group group-id="NavBarToolBar" anchor="first"/>
+        </action>
+        <action id="com.idoit.action.CreatePullRequestAction" class="com.idoit.action.CreatePullRequestAction"
+                text="Create Pull Request" description="Create a pull request so others can review your changes">
+            <add-to-group group-id="NavBarToolBar" anchor="first"/>
+        </action>
+    </actions>
+</idea-plugin>
