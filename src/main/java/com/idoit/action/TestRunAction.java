@@ -4,6 +4,7 @@ import com.idoit.bean.TestRun;
 import com.idoit.util.GitUtil;
 import com.idoit.util.IconUtil;
 import com.idoit.util.WebUtil;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.Messages;
@@ -13,7 +14,7 @@ import java.util.Optional;
 
 public class TestRunAction extends AnAction {
 
-    private static final String STATISTICS_MESSAGE_FORMAT = "Tests passed: %d\nTests failed: %d\nCheck results on UI: %s";
+    private static final String STATISTICS_MESSAGE_FORMAT = "Tests passed: %d\nTests failed: %d";
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
@@ -24,14 +25,13 @@ public class TestRunAction extends AnAction {
                     try {
                         TestRun testRun = WebUtil.createOrUpdateStatistics(branch, changed);
                         if (changed) {
-                            Thread.sleep(30_000);
+                            Thread.sleep(30_000); //TODO: bad. Replace with background task that is run in 30 sec afterwards
                         }
                         testRun = WebUtil.getJobStatus(testRun.getJobId());
-                        String message = String.format(STATISTICS_MESSAGE_FORMAT, testRun.getPassed(), testRun.getFailed(), testRun.getCiLink());
-                        Messages.showInfoMessage(message, "Statistics");
                         if (testRun.getFailed() == 0) {
                             WebUtil.progressWithBlock();
                         }
+                        showTestsInfoMessage(testRun);
                     } catch (Exception e) {
                         Messages.showErrorDialog(e.getMessage(), "Error");
                     }
@@ -42,5 +42,14 @@ public class TestRunAction extends AnAction {
     public void update(@NotNull AnActionEvent e) {
         super.update(e);
         IconUtil.updateActionIcon(e, "run_tests", getClass());
+    }
+
+    private void showTestsInfoMessage(TestRun testRun) {
+        String message = String.format(STATISTICS_MESSAGE_FORMAT, testRun.getPassed(), testRun.getFailed());
+        int response = Messages.showDialog(message, "Statistics", new String[]{"OK", "Check on CI"},
+                0, null);
+        if (response == 1) {
+            BrowserUtil.browse(testRun.getCiLink());
+        }
     }
 }

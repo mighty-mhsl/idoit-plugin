@@ -4,6 +4,7 @@ import com.idoit.bean.StudentProgress;
 import com.idoit.util.GitUtil;
 import com.idoit.util.IconUtil;
 import com.idoit.util.WebUtil;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.Messages;
@@ -22,8 +23,7 @@ public class CreatePullRequestAction extends AnAction {
                     WebUtil.closePullRequest(currentProgress.getPullNumber());
                 }
                 currentProgress = WebUtil.createPullRequest(currentBranch, templateBranch);
-                String pullUrl = currentProgress.getPullUrl().replaceAll("api\\.", "");
-                Messages.showInfoMessage(String.format("Pull request URL: %s", pullUrl), "Pull Request Info");
+                showPullInfoMessage(currentProgress);
             }
         } catch (Exception e) {
             Messages.showErrorDialog(e.getMessage(), "Error");
@@ -34,5 +34,14 @@ public class CreatePullRequestAction extends AnAction {
     public void update(@NotNull AnActionEvent e) {
         super.update(e);
         IconUtil.updateActionIcon(e, "pull_request", getClass());
+    }
+
+    private void showPullInfoMessage(StudentProgress currentProgress) {
+        String pullUrl = currentProgress.getPullUrl().replaceAll("api\\.", "");
+        int response = Messages.showDialog("Pull request successfully created", "Pull Request Info",
+                new String[]{"OK", "Check on GitHub"}, 0, null);
+        if (response == 1) {
+            BrowserUtil.browse(pullUrl);
+        }
     }
 }
