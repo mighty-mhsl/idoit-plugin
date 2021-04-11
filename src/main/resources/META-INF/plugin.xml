@@ -2,6 +2,7 @@
     <id>com.idoit.idoit-plugin</id>
     <name>Idoit-Git</name>
     <vendor email="mihusle@protonmail.com" url="http://www.yourcompany.com">IDOIT</vendor>
+    <idea-version since-build="162"/>
 
     <description><![CDATA[
     Plugin for passing courses from idoit platform right inside IDEA. Mostly used for github integration.
