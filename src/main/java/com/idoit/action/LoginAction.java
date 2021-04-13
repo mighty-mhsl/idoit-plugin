@@ -1,5 +1,6 @@
 package com.idoit.action;
 
+import com.idoit.util.ActionUtil;
 import com.idoit.util.GitUtil;
 import com.idoit.util.WebUtil;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -11,15 +12,13 @@ public class LoginAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
-        String login = Messages.showInputDialog("Login: ", "Login", null);
-        String password = Messages.showPasswordDialog("Password: ", "Login");
-        try {
+        ActionUtil.runSafe(() -> {
+            String login = Messages.showInputDialog("Login: ", "Login", null);
+            String password = Messages.showPasswordDialog("Password: ", "Login");
             WebUtil.login(login, password);
             String templateBranch = GitUtil.getTemplateLessonBranchName(event);
             WebUtil.fetchBranchInfo(templateBranch);
-        } catch (Exception e) {
-            Messages.showErrorDialog("Error", "Error");
-        }
+        });
     }
 
     @Override

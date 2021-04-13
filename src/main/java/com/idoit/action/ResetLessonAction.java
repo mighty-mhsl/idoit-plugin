@@ -1,5 +1,6 @@
 package com.idoit.action;
 
+import com.idoit.util.ActionUtil;
 import com.idoit.util.GitUtil;
 import com.idoit.util.IconUtil;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -11,15 +12,13 @@ public class ResetLessonAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
-        try {
+        ActionUtil.runSafe(() -> {
             int answer = Messages.showDialog("Do you really want to reset lesson progress (all the changes will be lost)?",
                     "Are You Sure?", new String[]{"Yes", "No"}, 0, null);
             if (answer == 0) {
                 GitUtil.resetLessonBranch(event);
             }
-        } catch (Exception e) {
-            Messages.showErrorDialog(e.getMessage(), "Error");
-        }
+        });
     }
 
     @Override

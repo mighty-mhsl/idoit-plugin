@@ -1,5 +1,6 @@
 package com.idoit.action;
 
+import com.idoit.util.ActionUtil;
 import com.idoit.util.GitUtil;
 import com.idoit.util.IconUtil;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -10,12 +11,14 @@ public class SwitchLessonSolutionAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
-        String currentBranch = GitUtil.getCurrentBranch(event);
-        if (currentBranch.contains("solution")) {
-            GitUtil.checkoutLessonBranch(event, currentBranch.replaceAll("solution", "template"));
-        } else {
-            GitUtil.checkoutSolutionBranch(event);
-        }
+        ActionUtil.runSafe(() -> {
+            String currentBranch = GitUtil.getCurrentBranch(event);
+            if (currentBranch.contains("solution")) {
+                GitUtil.checkoutLessonBranch(event, currentBranch.replaceAll("solution", "template"));
+            } else {
+                GitUtil.checkoutSolutionBranch(event);
+            }
+        });
     }
 
     @Override

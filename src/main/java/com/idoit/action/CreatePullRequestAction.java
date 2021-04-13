@@ -1,6 +1,7 @@
 package com.idoit.action;
 
 import com.idoit.bean.StudentProgress;
+import com.idoit.util.ActionUtil;
 import com.idoit.util.GitUtil;
 import com.idoit.util.IconUtil;
 import com.idoit.util.WebUtil;
@@ -14,7 +15,7 @@ public class CreatePullRequestAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
-        try {
+        ActionUtil.runSafe(() -> {
             String currentBranch = GitUtil.getCurrentBranch(event);
             if (!currentBranch.contains("template")) {
                 String templateBranch = GitUtil.getTemplateLessonBranchName(event);
@@ -25,9 +26,7 @@ public class CreatePullRequestAction extends AnAction {
                 currentProgress = WebUtil.createPullRequest(currentBranch, templateBranch);
                 showPullInfoMessage(currentProgress);
             }
-        } catch (Exception e) {
-            Messages.showErrorDialog(e.getMessage(), "Error");
-        }
+        });
     }
 
     @Override

@@ -1,19 +1,17 @@
 package com.idoit.action;
 
-import com.idoit.context.UserContext;
 import com.idoit.bean.Block;
 import com.idoit.bean.Lesson;
+import com.idoit.context.UserContext;
+import com.idoit.util.ActionUtil;
 import com.idoit.util.GitUtil;
 import com.idoit.util.IconUtil;
 import com.idoit.util.WebUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.util.IconLoader;
-import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
@@ -22,7 +20,7 @@ public class ChooseLessonAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
-        try {
+        ActionUtil.runSafe(() -> {
             long blockId = chooseBlock();
             if (blockId != 0) {
                 String lessonBranch = chooseLesson(blockId);
@@ -30,9 +28,7 @@ public class ChooseLessonAction extends AnAction {
                     GitUtil.checkoutLessonBranch(event, lessonBranch);
                 }
             }
-        } catch (Exception e) {
-            Messages.showErrorDialog(e.getMessage(), "Error");
-        }
+        });
     }
 
     @Override

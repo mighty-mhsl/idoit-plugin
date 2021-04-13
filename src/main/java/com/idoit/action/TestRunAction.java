@@ -1,6 +1,7 @@
 package com.idoit.action;
 
 import com.idoit.bean.TestRun;
+import com.idoit.util.ActionUtil;
 import com.idoit.util.GitUtil;
 import com.idoit.util.IconUtil;
 import com.idoit.util.WebUtil;
@@ -18,11 +19,11 @@ public class TestRunAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
-        boolean changed = GitUtil.areThereChanges(event);
-        GitUtil.pushLessonBranch(event);
-        Optional.ofNullable(GitUtil.getCurrentBranch(event))
-                .ifPresent(branch -> {
-                    try {
+        ActionUtil.runSafe(() -> {
+            boolean changed = GitUtil.areThereChanges(event);
+            GitUtil.pushLessonBranch(event);
+            Optional.ofNullable(GitUtil.getCurrentBranch(event))
+                    .ifPresent(branch -> ActionUtil.runSafe(() -> {
                         TestRun testRun = WebUtil.createOrUpdateStatistics(branch, changed);
                         if (changed) {
                             Thread.sleep(30_000); //TODO: bad. Replace with background task that is run in 30 sec afterwards
@@ -32,10 +33,8 @@ public class TestRunAction extends AnAction {
                             WebUtil.progressWithBlock();
                         }
                         showTestsInfoMessage(testRun);
-                    } catch (Exception e) {
-                        Messages.showErrorDialog(e.getMessage(), "Error");
-                    }
-                });
+                    }));
+        });
     }
 
     @Override
