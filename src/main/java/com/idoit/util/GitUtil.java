@@ -30,8 +30,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GitUtil {
+
+    private static final Pattern LESSON_BRANCH_PATTERN = Pattern.compile("block\\d{1,2}_lesson\\d{1,2}_.+$");
 
     /**
      * 1. Create a branch name: block{number}_lesson{number}_{userName}
@@ -132,7 +136,10 @@ public class GitUtil {
 
     private static String getLessonBranchName(GitRepository repository, String type) {
         return Optional.ofNullable(repository.getCurrentBranchName())
-                .map(currentBranch -> currentBranch.substring(0, currentBranch.lastIndexOf("_") + 1) + type)
+                .map(currentBranch -> {
+                    Matcher matcher = LESSON_BRANCH_PATTERN.matcher(currentBranch);
+                    return matcher.matches() ? currentBranch.substring(0, currentBranch.lastIndexOf("_") + 1) + type : null;
+                })
                 .orElse(null);
     }
 

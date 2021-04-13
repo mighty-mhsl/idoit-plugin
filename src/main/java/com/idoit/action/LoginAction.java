@@ -17,7 +17,9 @@ public class LoginAction extends AnAction {
             String password = Messages.showPasswordDialog("Password: ", "Login");
             WebUtil.login(login, password);
             String templateBranch = GitUtil.getTemplateLessonBranchName(event);
-            WebUtil.fetchBranchInfo(templateBranch);
+            if (templateBranch != null) {
+                WebUtil.fetchBranchInfo(templateBranch);
+            }
         });
     }
 
