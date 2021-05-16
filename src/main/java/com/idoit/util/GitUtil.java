@@ -179,8 +179,10 @@ public class GitUtil {
         Git git = Git.getInstance();
         ChangeListManagerImpl changeListManager = (ChangeListManagerImpl) ChangeListManager.getInstance(repository.getProject());
         LocalChangeList defaultChangeList = changeListManager.getDefaultChangeList();
-        addChangesToStage(git, repository, defaultChangeList);
-        commitChanges(git, repository);
+        if (!defaultChangeList.getChanges().isEmpty()) {
+            addChangesToStage(git, repository, defaultChangeList);
+            commitChanges(git, repository);
+        }
     }
 
     private static void addChangesToStage(Git git, GitRepository repository, LocalChangeList defaultChangeList) {
