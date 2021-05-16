@@ -52,6 +52,7 @@ public class GitUtil {
             getExistingLocalBranch(repository, localBranch).ifPresentOrElse(
                     existingBranch -> checkoutExistingBranch(project, repository, existingBranch.getName()),
                     () -> createAndCheckoutBranch(project, repository, lessonBranch, localBranch));
+            refreshView(event);
         });
     }
 
@@ -60,6 +61,7 @@ public class GitUtil {
             commitAndRefreshView(event, repository);
             String solutionBranch = getSolutionLessonBranchName(repository);
             checkoutExistingBranch(project, repository, solutionBranch);
+            refreshView(event);
         });
     }
 
@@ -81,6 +83,7 @@ public class GitUtil {
                     Collections.singletonMap(usersBranch, repositories),
                     () -> createAndCheckoutBranch(project, repository, lessonBranch, usersBranch)
             ));
+            refreshView(event);
         });
     }
 
@@ -96,6 +99,7 @@ public class GitUtil {
                             null,
                             GitPushSource.create(currentBranch)
                     ).push(false));
+            refreshView(event);
         });
     }
 
@@ -146,6 +150,11 @@ public class GitUtil {
     private static void commitAndRefreshView(AnActionEvent event, GitRepository repository) {
         new SaveAllAction().actionPerformed(event);
         commitCurrentChanges(repository);
+        new RefreshAction().actionPerformed(event);
+    }
+
+    private static void refreshView(AnActionEvent event) {
+        new SaveAllAction().actionPerformed(event);
         new RefreshAction().actionPerformed(event);
     }
 
