@@ -20,6 +20,7 @@ public class LoginAction extends AnAction {
             if (templateBranch != null) {
                 WebUtil.fetchBranchInfo(templateBranch);
             }
+            Messages.showInfoMessage("You successfully logged in to idoit!", "Login Succeeded");
         });
     }
 
