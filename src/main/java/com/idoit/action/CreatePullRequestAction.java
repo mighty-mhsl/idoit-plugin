@@ -1,32 +1,28 @@
 package com.idoit.action;
 
 import com.idoit.bean.StudentProgress;
-import com.idoit.util.ActionUtil;
 import com.idoit.util.GitUtil;
 import com.idoit.util.IconUtil;
 import com.idoit.util.WebUtil;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.NotNull;
 
-public class CreatePullRequestAction extends AnAction {
+public class CreatePullRequestAction extends AbstractAction {
 
     @Override
-    public void actionPerformed(@NotNull AnActionEvent event) {
-        ActionUtil.runSafe(() -> {
-            String currentBranch = GitUtil.getCurrentBranch(event);
-            if (!currentBranch.contains("template")) {
-                String templateBranch = GitUtil.getTemplateLessonBranchName(event);
-                StudentProgress currentProgress = WebUtil.getCurrentProgress();
-                if (currentProgress.getPullNumber() != 0) {
-                    WebUtil.closePullRequest(currentProgress.getPullNumber());
-                }
-                currentProgress = WebUtil.createPullRequest(currentBranch, templateBranch);
-                showPullInfoMessage(currentProgress);
+    public void performAction(@NotNull AnActionEvent event) throws Exception {
+        String currentBranch = GitUtil.getCurrentBranch(event);
+        if (!currentBranch.contains("template")) {
+            String templateBranch = GitUtil.getTemplateLessonBranchName(event);
+            StudentProgress currentProgress = WebUtil.getCurrentProgress();
+            if (currentProgress.getPullNumber() != 0) {
+                WebUtil.closePullRequest(currentProgress.getPullNumber());
             }
-        });
+            currentProgress = WebUtil.createPullRequest(currentBranch, templateBranch);
+            showPullInfoMessage(currentProgress);
+        }
     }
 
     @Override

@@ -1,15 +1,17 @@
 package com.idoit.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.idoit.context.HttpContext;
-import com.idoit.context.UserContext;
 import com.idoit.bean.AuthResponse;
 import com.idoit.bean.Block;
 import com.idoit.bean.BranchInfo;
+import com.idoit.bean.ErrorReport;
 import com.idoit.bean.Lesson;
 import com.idoit.bean.StudentProgress;
 import com.idoit.bean.TestRun;
+import com.idoit.context.HttpContext;
+import com.idoit.context.UserContext;
 import com.idoit.json.JsonBodyHandler;
 import com.intellij.openapi.ui.Messages;
 
@@ -88,6 +90,20 @@ public class WebUtil {
     public static void closePullRequest(int pullNumber) throws IOException, InterruptedException {
         HttpRequest request = prepareClosePullRequest(pullNumber);
         sendStudentProgress(request);
+    }
+
+    public static void sendErrorReport(ErrorReport errorReport) throws IOException, InterruptedException {
+        HttpRequest request = prepareErrorReportRequest(errorReport);
+        HttpContext.HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    private static HttpRequest prepareErrorReportRequest(ErrorReport errorReport) throws JsonProcessingException {
+        String body = MAPPER.writeValueAsString(errorReport);
+        return HttpRequest.newBuilder(URI.create(getApiUrl("/all/plugin/error")))
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
     }
 
     private static void performLogin(HttpRequest request) throws IOException, InterruptedException {
