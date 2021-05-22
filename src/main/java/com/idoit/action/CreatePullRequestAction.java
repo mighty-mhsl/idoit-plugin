@@ -14,7 +14,7 @@ public class CreatePullRequestAction extends AbstractAction {
     @Override
     public void performAction(@NotNull AnActionEvent event) throws Exception {
         String currentBranch = GitUtil.getCurrentBranch(event);
-        if (!currentBranch.contains("template")) {
+        if (!currentBranch.contains("template") && !currentBranch.contains("solution")) {
             String templateBranch = GitUtil.getTemplateLessonBranchName(event);
             StudentProgress currentProgress = WebUtil.getCurrentProgress();
             if (currentProgress.getPullNumber() != 0) {
@@ -22,6 +22,8 @@ public class CreatePullRequestAction extends AbstractAction {
             }
             currentProgress = WebUtil.createPullRequest(currentBranch, templateBranch);
             showPullInfoMessage(currentProgress);
+        } else {
+            Messages.showErrorDialog("Cannot create a pull request for template/solution! Please, switch to your own lesson and try again", "Error");
         }
     }
 

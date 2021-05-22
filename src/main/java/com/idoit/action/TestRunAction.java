@@ -18,16 +18,18 @@ public class TestRunAction extends AbstractAction {
         boolean changed = GitUtil.areThereChanges(event);
         GitUtil.pushLessonBranch(event);
         String currentBranch = GitUtil.getCurrentBranch(event);
-        if (currentBranch != null) {
-            TestRun testRun = WebUtil.createOrUpdateStatistics(currentBranch, changed);
+        if (currentBranch != null && !currentBranch.contains("solution")) {
             if (changed) {
                 Thread.sleep(30_000); //TODO: bad. Replace with background task that is run in 30 sec afterwards
             }
+            TestRun testRun = WebUtil.createOrUpdateStatistics(currentBranch, changed);
             testRun = WebUtil.getJobStatus(testRun.getJobId());
             if (testRun.getFailed() == 0) {
                 WebUtil.progressWithBlock();
             }
             showTestsInfoMessage(testRun);
+        } else {
+            Messages.showErrorDialog("Cannot run tests for solution! Please, switch to your own lesson and try again.", "Error");
         }
     }
 
