@@ -1,5 +1,6 @@
 package com.idoit.action;
 
+import com.idoit.action.rules.AuthorizedAction;
 import com.idoit.util.GitUtil;
 import com.idoit.util.IconUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;

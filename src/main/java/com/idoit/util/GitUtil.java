@@ -8,10 +8,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKey;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsException;
+import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.ChangeListManagerImpl;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.openapi.vcs.changes.actions.RefreshAction;
+import com.intellij.openapi.vcs.changes.actions.RollbackAction;
+import com.intellij.openapi.vcs.changes.ui.RollbackWorker;
 import git4idea.GitLocalBranch;
 import git4idea.GitReference;
 import git4idea.branch.GitBranchUtil;
@@ -25,6 +28,7 @@ import git4idea.push.GitPushSource;
 import git4idea.repo.GitRepository;
 import git4idea.ui.branch.GitBranchActionsUtilKt;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +52,7 @@ public class GitUtil {
     public static void checkoutLessonBranch(AnActionEvent event, String lessonBranch) {
         doInRepo(event, (project, repository) -> {
             String localBranch = createLocalBranchName(lessonBranch);
-            commitAndRefreshView(event, repository);
+            commitOrRevertAndRefreshView(event, repository);
             getExistingLocalBranch(repository, localBranch).ifPresentOrElse(
                     existingBranch -> checkoutExistingBranch(project, repository, existingBranch.getName()),
                     () -> createAndCheckoutBranch(project, repository, lessonBranch, localBranch));
@@ -58,7 +62,7 @@ public class GitUtil {
 
     public static void checkoutSolutionBranch(AnActionEvent event) {
         doInRepo(event, (project, repository) -> {
-            commitAndRefreshView(event, repository);
+            commitOrRevertAndRefreshView(event, repository);
             String solutionBranch = getSolutionLessonBranchName(repository);
             checkoutExistingBranch(project, repository, solutionBranch);
             refreshView(event);
@@ -74,7 +78,7 @@ public class GitUtil {
      */
     public static void resetLessonBranch(AnActionEvent event) {
         doInRepo(event, (project, repository) -> {
-            commitAndRefreshView(event, repository);
+            commitOrRevertAndRefreshView(event, repository);
             String lessonBranch = getTemplateLessonBranchName(repository);
             String usersBranch = repository.getCurrentBranchName();
             GitBrancher brancher = GitBrancher.getInstance(project);
@@ -89,7 +93,7 @@ public class GitUtil {
 
     public static void pushLessonBranch(AnActionEvent event) {
         doInRepo(event, (project, repository) -> {
-            commitAndRefreshView(event, repository);
+            commitOrRevertAndRefreshView(event, repository);
             List<GitRepository> repositories = Collections.singletonList(repository);
             Optional.ofNullable(repository.getCurrentBranch())
                     .ifPresent(currentBranch -> new VcsPushDialog(
@@ -130,6 +134,11 @@ public class GitUtil {
                 .orElse(null);
     }
 
+    public static boolean isUsersOwnBranch(AnActionEvent event) {
+        String branch = getCurrentBranch(event);
+        return !branch.contains("template") && !branch.contains("solution") && branch.contains(UserContext.auth.getLogin());
+    }
+
     private static String getTemplateLessonBranchName(GitRepository repository) {
         return getLessonBranchName(repository, "template");
     }
@@ -147,14 +156,28 @@ public class GitUtil {
                 .orElse(null);
     }
 
-    private static void commitAndRefreshView(AnActionEvent event, GitRepository repository) {
-        new SaveAllAction().actionPerformed(event);
-        commitCurrentChanges(repository);
-        new RefreshAction().actionPerformed(event);
+    private static void commitOrRevertAndRefreshView(AnActionEvent event, GitRepository repository) {
+        if (isUsersOwnBranch(event)) {
+            saveAllAndActAndRefreshVcs(event, () -> commitCurrentChanges(repository));
+        } else {
+            saveAllAndActAndRefreshVcs(event, () -> rollbackCurrentChanges(event, repository));
+        }
+    }
+
+    private static void rollbackCurrentChanges(AnActionEvent event, GitRepository repository) {
+        RollbackWorker rollbackWorker = new RollbackWorker(event.getProject());
+        ChangeListManagerImpl changeListManager = (ChangeListManagerImpl) ChangeListManager.getInstance(repository.getProject());
+        Collection<Change> changes = changeListManager.getDefaultChangeList().getChanges();
+        rollbackWorker.doRollback(changes, true);
     }
 
     private static void refreshView(AnActionEvent event) {
+        saveAllAndActAndRefreshVcs(event, () -> { });
+    }
+
+    private static void saveAllAndActAndRefreshVcs(AnActionEvent event, Runnable runnable) {
         new SaveAllAction().actionPerformed(event);
+        runnable.run();
         new RefreshAction().actionPerformed(event);
     }
 

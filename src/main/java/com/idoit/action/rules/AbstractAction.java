@@ -1,4 +1,4 @@
-package com.idoit.action;
+package com.idoit.action.rules;
 
 import com.idoit.bean.ErrorReport;
 import com.idoit.context.UserContext;

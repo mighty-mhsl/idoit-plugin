@@ -1,5 +1,6 @@
 package com.idoit.action;
 
+import com.idoit.action.rules.OwnBranchAction;
 import com.idoit.bean.StudentProgress;
 import com.idoit.util.GitUtil;
 import com.idoit.util.IconUtil;
@@ -9,22 +10,18 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.NotNull;
 
-public class CreatePullRequestAction extends AuthorizedAction {
+public class CreatePullRequestAction extends OwnBranchAction {
 
     @Override
-    public void performAuthorizedAction(@NotNull AnActionEvent event) throws Exception {
+    protected void performActionOnOwnedBranch(AnActionEvent event) throws Exception {
         String currentBranch = GitUtil.getCurrentBranch(event);
-        if (!currentBranch.contains("template") && !currentBranch.contains("solution")) {
-            String templateBranch = GitUtil.getTemplateLessonBranchName(event);
-            StudentProgress currentProgress = WebUtil.getCurrentProgress();
-            if (currentProgress.getPullNumber() != 0) {
-                WebUtil.closePullRequest(currentProgress.getPullNumber());
-            }
-            currentProgress = WebUtil.createPullRequest(currentBranch, templateBranch);
-            showPullInfoMessage(currentProgress);
-        } else {
-            Messages.showErrorDialog("Cannot create a pull request for template/solution! Please, switch to your own lesson and try again", "Error");
+        String templateBranch = GitUtil.getTemplateLessonBranchName(event);
+        StudentProgress currentProgress = WebUtil.getCurrentProgress();
+        if (currentProgress.getPullNumber() != 0) {
+            WebUtil.closePullRequest(currentProgress.getPullNumber());
         }
+        currentProgress = WebUtil.createPullRequest(currentBranch, templateBranch);
+        showPullInfoMessage(currentProgress);
     }
 
     @Override

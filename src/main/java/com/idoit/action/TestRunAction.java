@@ -1,5 +1,6 @@
 package com.idoit.action;
 
+import com.idoit.action.rules.OwnBranchAction;
 import com.idoit.bean.TestRun;
 import com.idoit.util.GitUtil;
 import com.idoit.util.IconUtil;
@@ -9,12 +10,12 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.NotNull;
 
-public class TestRunAction extends AuthorizedAction {
+public class TestRunAction extends OwnBranchAction {
 
     private static final String STATISTICS_MESSAGE_FORMAT = "Tests passed: %d\nTests failed: %d";
 
     @Override
-    public void performAuthorizedAction(@NotNull AnActionEvent event) throws Exception {
+    protected void performActionOnOwnedBranch(AnActionEvent event) throws Exception {
         boolean changed = GitUtil.areThereChanges(event);
         GitUtil.pushLessonBranch(event);
         String currentBranch = GitUtil.getCurrentBranch(event);

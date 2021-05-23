@@ -1,5 +1,6 @@
 package com.idoit.action;
 
+import com.idoit.action.rules.AuthorizedAction;
 import com.idoit.bean.Block;
 import com.idoit.bean.Lesson;
 import com.idoit.context.UserContext;
