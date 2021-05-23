@@ -9,12 +9,12 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.NotNull;
 
-public class TestRunAction extends AbstractAction {
+public class TestRunAction extends AuthorizedAction {
 
     private static final String STATISTICS_MESSAGE_FORMAT = "Tests passed: %d\nTests failed: %d";
 
     @Override
-    public void performAction(@NotNull AnActionEvent event) throws Exception {
+    public void performAuthorizedAction(@NotNull AnActionEvent event) throws Exception {
         boolean changed = GitUtil.areThereChanges(event);
         GitUtil.pushLessonBranch(event);
         String currentBranch = GitUtil.getCurrentBranch(event);

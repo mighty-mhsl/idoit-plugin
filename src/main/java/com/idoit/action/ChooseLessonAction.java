@@ -14,10 +14,10 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
-public class ChooseLessonAction extends AbstractAction {
+public class ChooseLessonAction extends AuthorizedAction {
 
     @Override
-    public void performAction(@NotNull AnActionEvent event) throws Exception {
+    public void performAuthorizedAction(@NotNull AnActionEvent event) throws Exception {
         long blockId = chooseBlock();
         if (blockId != 0) {
             String lessonBranch = chooseLesson(blockId);

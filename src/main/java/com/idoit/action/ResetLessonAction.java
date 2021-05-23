@@ -6,10 +6,10 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.NotNull;
 
-public class ResetLessonAction extends AbstractAction {
+public class ResetLessonAction extends AuthorizedAction {
 
     @Override
-    public void performAction(@NotNull AnActionEvent event) {
+    public void performAuthorizedAction(@NotNull AnActionEvent event) {
         int answer = Messages.showDialog("Do you really want to reset lesson progress (all the changes will be lost)?",
                 "Are You Sure?", new String[]{"Yes", "No"}, 0, null);
         if (answer == 0) {

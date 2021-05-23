@@ -9,10 +9,10 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.NotNull;
 
-public class CreatePullRequestAction extends AbstractAction {
+public class CreatePullRequestAction extends AuthorizedAction {
 
     @Override
-    public void performAction(@NotNull AnActionEvent event) throws Exception {
+    public void performAuthorizedAction(@NotNull AnActionEvent event) throws Exception {
         String currentBranch = GitUtil.getCurrentBranch(event);
         if (!currentBranch.contains("template") && !currentBranch.contains("solution")) {
             String templateBranch = GitUtil.getTemplateLessonBranchName(event);

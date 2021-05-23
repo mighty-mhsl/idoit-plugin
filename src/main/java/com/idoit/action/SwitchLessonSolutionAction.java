@@ -5,10 +5,10 @@ import com.idoit.util.IconUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class SwitchLessonSolutionAction extends AbstractAction {
+public class SwitchLessonSolutionAction extends AuthorizedAction {
 
     @Override
-    public void performAction(@NotNull AnActionEvent event) {
+    public void performAuthorizedAction(@NotNull AnActionEvent event) {
         String currentBranch = GitUtil.getCurrentBranch(event);
         if (currentBranch.contains("solution")) {
             GitUtil.checkoutLessonBranch(event, currentBranch.replaceAll("solution", "template"));
